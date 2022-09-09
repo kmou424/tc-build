@@ -41,7 +41,8 @@ These scripts have been tested in a Docker image of the following distributions 
               texinfo \
               u-boot-tools \
               xz-utils \
-              zlib1g-dev
+              zlib1g-dev \
+              patchelf
   ```
 
 * ### Fedora
@@ -66,7 +67,8 @@ These scripts have been tested in a Docker image of the following distributions 
               texinfo-tex \
               uboot-tools \
               xz \
-              zlib-devel
+              zlib-devel \
+              patchelf
   ```
 
 * ### Arch Linux / Manjaro
@@ -87,7 +89,8 @@ These scripts have been tested in a Docker image of the following distributions 
             ninja \
             openssl \
             python3 \
-            uboot-tools
+            uboot-tools \
+            patchelf
   ```
 
 * ### Clear Linux
