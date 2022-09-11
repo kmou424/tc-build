@@ -56,3 +56,7 @@ for bin in $(find toolchain -mindepth 2 -maxdepth 3 -type f -exec file {} \; | g
 	echo "$bin"
 	patchelf --set-rpath '$ORIGIN/../lib' "$bin"
 done
+
+msg "build-tc HEAD: $(git rev-parse HEAD)"
+msg "binutils HEAD: $(git -C binutils/ rev-parse HEAD)"
+msg "llvm-project HEAD: $(git -C llvm-project/ rev-parse HEAD)"
