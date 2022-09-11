@@ -7,25 +7,39 @@ function msg() {
     echo -e "\e[1;32m$@\e[0m"
 }
 
-# Don't touch repo if running on CI
-[ -z "$GH_RUN_ID" ] && repo_flag="--shallow-clone" || repo_flag="--no-update"
-
 # Build LLVM
 msg "Building LLVM..."
 ./build-llvm.py \
 	--clang-vendor "IceCream" \
         --install-folder "toolchain" \
 	--targets "ARM;AArch64;X86" \
-	"$repo_flag"
+	--branch "release/15.x" \
+	--shallow-clone \
+	--projects "clang;lld;polly;bolt" \
+	--lto "full" \
+	--pgo "kernel-defconfig-slim" \
+	--bolt \
+	--defines "LLVM_PARALLEL_COMPILE_JOBS=$(nproc) LLVM_PARALLEL_LINK_JOBS=$(nproc) CMAKE_C_FLAGS=-O3 CMAKE_CXX_FLAGS=-O3"
 
 # Build binutils
 msg "Building binutils..."
-./build-binutils.py --targets arm aarch64 x86_64 --install-folder "toolchain"
+if [ $(which clang) ] && [ $(which clang++) ]; then
+	export CC=$(which ccache)" clang"
+	export CXX=$(which ccache)" clang++"
+	[ $(which llvm-strip) ] && stripBin=llvm-strip
+else
+	export CC=$(which ccache)" gcc"
+	export CXX=$(which ccache)" g++"
+	[ $(which strip) ] && stripBin=strip
+fi
+./build-binutils.py \
+	--targets arm aarch64 x86_64
+	--install-folder "toolchain"
 
 # Remove unused products
 msg "Removing unused products..."
 rm -fr toolchain/include
-rm -f toolchain/lib/*.a toolchain/lib/*.la
+rm -f toolchain/lib/*.a toolchain/lib/*.la toolchain/lib/clang/*/lib/linux/*.a*
 
 # Strip remaining products
 msg "Stripping remaining products..."
