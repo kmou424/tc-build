@@ -43,18 +43,34 @@ rm -f toolchain/lib/*.a toolchain/lib/*.la toolchain/lib/clang/*/lib/linux/*.a*
 
 # Strip remaining products
 msg "Stripping remaining products..."
-for f in $(find toolchain -type f -exec file {} \; | grep 'not stripped' | awk '{print $1}'); do
-	strip ${f: : -1}
-done
-
-# Set executable rpaths so setting LD_LIBRARY_PATH isn't necessary
-msg "Setting library load paths for portability..."
-for bin in $(find toolchain -mindepth 2 -maxdepth 3 -type f -exec file {} \; | grep 'ELF .* interpreter' | awk '{print $1}'); do
-	# Remove last character from file output (':')
-	bin="${bin: : -1}"
-
-	echo "$bin"
-	patchelf --set-rpath '$ORIGIN/../lib' "$bin"
+IFS=$'\n'
+for f in $(find toolchain -type f -exec file {} \;); do
+	if [ -n "$(echo $f | grep 'ELF .* interpreter')" ]; then
+		i=$(echo $f | awk '{print $1}'); i=${i: : -1}
+		# Set executable rpaths so setting LD_LIBRARY_PATH isn't necessary
+		msg "Setting library load paths for portability..."
+		if [ -d $(dirname $i)/../lib/ldscripts ]; then
+			patchelf --set-rpath '$ORIGIN/../../lib:$ORIGIN/../lib' "$i"
+		else
+			if [ "$(patchelf --print-rpath $i)" != "\$ORIGIN/../../lib:\$ORIGIN/../lib" ]; then
+				patchelf --set-rpath '$ORIGIN/../lib' "$i"
+			fi
+		fi
+		# Strip remaining products
+		if [ -n "$(echo $f | grep 'not stripped')" ]; then
+			${stripBin} --strip-unneeded "$i"
+		fi
+	elif [ -n "$(echo $f | grep 'ELF .* relocatable')" ]; then
+		if [ -n "$(echo $f | grep 'not stripped')" ]; then
+			i=$(echo $f | awk '{print $1}');
+			${stripBin} --strip-unneeded "${i: : -1}"
+		fi
+	else
+		if [ -n "$(echo $f | grep 'not stripped')" ]; then
+			i=$(echo $f | awk '{print $1}');
+			${stripBin} --strip-all "${i: : -1}"
+		fi
+	fi
 done
 
 msg "build-tc HEAD: $(git rev-parse HEAD)"
