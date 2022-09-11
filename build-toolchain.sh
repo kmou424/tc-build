@@ -10,7 +10,7 @@ function msg() {
 # Build LLVM
 msg "Building LLVM..."
 ./build-llvm.py \
-	--clang-vendor "IceCream" \
+	--clang-vendor "IceCream-$(date +%Y%m%d)" \
         --install-folder "toolchain" \
 	--targets "ARM;AArch64;X86" \
 	--branch "release/15.x" \
