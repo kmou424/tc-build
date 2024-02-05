@@ -10,14 +10,14 @@ function msg() {
 # Build LLVM
 msg "Building LLVM..."
 ./build-llvm.py \
-	--clang-vendor "IceCream-$(date +%Y%m%d)" \
+	--vendor-string "IceCream-$(date +%Y%m%d)" \
         --install-folder "toolchain" \
-	--targets "ARM;AArch64;X86" \
-	--branch "release/15.x" \
+	--targets ARM AArch64 X86 \
+	--ref "release/15.x" \
 	--shallow-clone \
-	--projects "clang;lld;polly;bolt" \
-	--lto "full" \
-	--pgo "kernel-defconfig-slim" \
+	--projects clang lld polly bolt \
+	--lto full \
+	--pgo kernel-defconfig-slim \
 	--bolt \
 	--defines "LLVM_PARALLEL_COMPILE_JOBS=$(nproc) LLVM_PARALLEL_LINK_JOBS=$(nproc) CMAKE_C_FLAGS=-O3 CMAKE_CXX_FLAGS=-O3"
 
@@ -33,7 +33,7 @@ else
 	[ $(which strip) ] && stripBin=strip
 fi
 ./build-binutils.py \
-	--targets arm aarch64 x86_64
+	--targets arm aarch64 x86_64 \
 	--install-folder "toolchain"
 
 # Remove unused products
