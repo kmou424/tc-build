@@ -13,7 +13,7 @@ msg "Building LLVM..."
 	--vendor-string "IceCream-$(date +%Y%m%d)" \
         --install-folder "toolchain" \
 	--targets ARM AArch64 X86 \
-	--ref "release/15.x" \
+	--ref "release/17.x" \
 	--shallow-clone \
 	--projects clang lld polly bolt \
 	--pgo kernel-defconfig-slim \
