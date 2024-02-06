@@ -15,9 +15,8 @@ msg "Building LLVM..."
 	--targets ARM AArch64 X86 \
 	--ref "release/17.x" \
 	--shallow-clone \
-	--projects clang lld polly bolt \
+	--projects clang lld polly \
 	--pgo kernel-defconfig-slim \
-	--bolt \
 	--defines "LLVM_PARALLEL_COMPILE_JOBS=$(nproc) LLVM_PARALLEL_LINK_JOBS=$(nproc) CMAKE_C_FLAGS=-O3 CMAKE_CXX_FLAGS=-O3"
 
 # Build binutils
