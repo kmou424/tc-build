@@ -74,5 +74,5 @@ for f in $(find toolchain -type f -exec file {} \;); do
 done
 
 msg "build-tc HEAD: $(git rev-parse HEAD)"
-msg "binutils HEAD: $(git -C binutils/ rev-parse HEAD)"
-msg "llvm-project HEAD: $(git -C llvm-project/ rev-parse HEAD)"
+msg "binutils HEAD: $(git -C src/binutils/ rev-parse HEAD)"
+msg "llvm-project HEAD: $(git -C src/llvm-project/ rev-parse HEAD)"
